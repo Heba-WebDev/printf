@@ -21,6 +21,31 @@ int write_and_count(int fd, void *buf, size_t n, int count)
 	count++;
 	return (count);
 }
+
+/**
+ * handle_integers - formats signed decimal integers
+ * @args: list of arguments to be formatted
+ * @char_printed_count: number of characters printed to the output stream
+ *
+ * Return: retuns char_printd_count
+ */
+
+int handle_integers(int char_printed_count, va_list args)
+{
+	char buf[32];
+	int num, len, write_res;
+
+	num = va_arg(args, int);
+	len = sprintf(buf, "%d", num);
+	write_res = write(1, buf, len);
+	if (write_res < 0)
+	{
+		return (char_printed_count);
+	}
+	char_printed_count += write_res;
+	return (char_printed_count);
+}
+
 /**
  * handle_strings - formats strings
  * @char_printed_count: number of characters printed to the output stream
@@ -59,12 +84,14 @@ int handle_strings(int char_printed_count, va_list args, char type)
 	}
 	return (char_printed_count);
 }
+
 /**
  * _printf - prints formated text to the stdout
  * @format: how the text will be formatted
  *
  * Return: the number of characters printed
  */
+
 int _printf(const char *format, ...)
 {
 	va_list args;
@@ -79,6 +106,10 @@ int _printf(const char *format, ...)
 			i++;
 			switch (format[i])
 			{
+				case 'd':
+				case 'i':
+					char_printed_count = handle_integers(char_printed_count, args);
+					break;
 				case 'c':
 					char_printed_count = handle_strings(char_printed_count, args, 'c');
 					break;
